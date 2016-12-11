@@ -2,10 +2,12 @@
 -- Author: Vic Fryzel
 -- http://github.com/vicfryzel/xmonad-config
 
-import System.IO
+import Graphics.X11.ExtraTypes.XF86
 import System.Exit
+import System.IO
 import XMonad
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.DynamicLog (xmobar)
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
@@ -14,9 +16,8 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
-import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
-import Graphics.X11.ExtraTypes.XF86
+import XMonad.Util.Run(spawnPipe)
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -26,7 +27,7 @@ import qualified Data.Map        as M
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal = "/usr/bin/gnome-terminal"
+myTerminal = "/usr/bin/terminology"
 
 -- The command to lock the screen or show the screensaver.
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
@@ -134,7 +135,7 @@ myBorderWidth = 1
 -- ("right alt"), which does not conflict with emacs keybindings. The
 -- "windows key" is usually mod4Mask.
 --
-myModMask = mod1Mask
+myModMask = mod4Mask
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   ----------------------------------------------------------------------
@@ -164,27 +165,27 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   -- Mute volume.
   , ((0, xF86XK_AudioMute),
-     spawn "amixer -q set Master toggle")
+     spawn "amixer -q set IEC958 toggle")
 
   -- Decrease volume.
   , ((0, xF86XK_AudioLowerVolume),
-     spawn "amixer -q set Master 10%-")
+     spawn "amixer -q set IEC958 10%-")
 
   -- Increase volume.
   , ((0, xF86XK_AudioRaiseVolume),
-     spawn "amixer -q set Master 10%+")
- 
+     spawn "amixer -q set IEC958 10%+")
+
   -- Mute volume.
   , ((modMask .|. controlMask, xK_m),
-     spawn "amixer -q set Master toggle")
+     spawn "amixer -q set IEC958 toggle")
 
   -- Decrease volume.
   , ((modMask .|. controlMask, xK_j),
-     spawn "amixer -q set Master 10%-")
+     spawn "amixer -q set IEC958 10%-")
 
   -- Increase volume.
   , ((modMask .|. controlMask, xK_k),
-     spawn "amixer -q set Master 10%+")
+     spawn "amixer -q set IEC958 10%+")
 
   -- Audio previous.
   , ((0, 0x1008FF16),
