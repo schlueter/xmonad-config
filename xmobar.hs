@@ -17,8 +17,7 @@ Config { font = "xft:Fixed-8"
        , iconRoot = "."
        , allDesktops = True
        , commands = [
-           Run Weather "KNYC" ["-t","<tempF>F <skyCondition>","-L","64","-H","77","-n","#CEFFAC","-h","#FFB6B0","-l","#96CBFE"] 30
-         , Run MultiCpu ["-t","Cpu: <total0> <total1> <total2> <total3>","-L","30","-H","60","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC","-w","3"] 10
+           Run MultiCpu ["-t","Cpu: <total0> <total1> <total2> <total3>","-L","30","-H","60","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC","-w","3"] 10
          , Run Memory ["-t","Mem: <usedratio>%","-H","8192","-L","4096","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC"] 10
          , Run Swap ["-t","Swap: <usedratio>%","-H","1024","-L","512","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC"] 10
          , Run Network "wlp3s0" ["-t","Net: <rx>, <tx>","-H","200","-L","10","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC"] 10
@@ -29,6 +28,6 @@ Config { font = "xft:Fixed-8"
        ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ %kbd%  %battery%  %multicpu%  %memory%  %swap%  %wlp3s0%   <fc=#FFFFCC>%date%</fc>   %KNYC%"
+       , template = "%StdinReader% }{ %kbd%  %battery%  %multicpu%  %memory%  %swap%  %wlp3s0%   <fc=#FFFFCC>%date%</fc>"
        , overrideRedirect = False
 }
