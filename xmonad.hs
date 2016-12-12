@@ -1,13 +1,13 @@
--- xmonad config used by Vic Fryzel
--- Author: Vic Fryzel
--- http://github.com/vicfryzel/xmonad-config
+-- Author: Brandon Schlueter
+
+-- Based on:
+--   http://github.com/vicfryzel/xmonad-config
 
 import Graphics.X11.ExtraTypes.XF86
 import System.Exit
 import System.IO
 import XMonad
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.DynamicLog (xmobar)
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
@@ -22,27 +22,11 @@ import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
 
-------------------------------------------------------------------------
--- Terminal
--- The preferred terminal program, which is used in a binding below and by
--- certain contrib modules.
---
 myTerminal = "/usr/bin/terminology"
-
--- The command to lock the screen or show the screensaver.
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
-
--- The command to take a selective screenshot, where you select
--- what you'd like to capture on the screen.
 mySelectScreenshot = "select-screenshot"
-
--- The command to take a fullscreen screenshot.
 myScreenshot = "screenshot"
-
--- The command to use as a launcher, to launch commands that don't have
--- preset keybindings.
 myLauncher = "$(yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*' -nb '#000000' -nf '#FFFFFF' -sb '#7C7C7C' -sf '#CEFFAC')"
-
 myMuteToggle = "pactl set-sink-mute $(pacmd list-sinks | grep '*' | awk '/\\*/{ print $3}') toggle"
 myDecreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/\\*/{ print $3}') -10%"
 myIncreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/\\*/{ print $3}') +10%"
@@ -50,98 +34,48 @@ myPreviousMedia = "playerctl previous"
 myNextMedia = "playerctl next"
 myPlayPause = "playerctl play-pause"
 
-------------------------------------------------------------------------
--- Workspaces
--- The default number of workspaces (virtual screens) and their names.
---
 myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
 
-
-------------------------------------------------------------------------
--- Window rules
--- Execute arbitrary actions and WindowSet manipulations when managing
--- a new window. You can use this to, for example, always float a
--- particular program, or have a client always appear on a particular
--- workspace.
---
--- To find the property name associated with a program, use
--- > xprop | grep WM_CLASS
--- and click on the client you're interested in.
---
--- To match on the WM_NAME, you can use 'title' in the same way that
--- 'className' and 'resource' are used below.
---
 myManageHook = composeAll
-    [ className =? "Chromium" --> doShift "2:web"
-    , className =? "Google-chrome" --> doShift "2:web"
-    , resource  =? "desktop_window" --> doIgnore
-    , className =? "Galculator" --> doFloat
-    , className =? "Dialog" --> doFloat
-    , className =? "Steam" --> doFloat
-    , className =? "Gimp" --> doFloat
-    , resource  =? "gpicview" --> doFloat
-    , className =? "MPlayer" --> doFloat
-    , className =? "VirtualBox" --> doShift "4:vm"
-    , className =? "Xchat" --> doShift "5:media"
-    , className =? "stalonetray" --> doIgnore
-    , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
+  [ className =? "Chromium" --> doShift "2:web"
+  , className =? "Google-chrome" --> doShift "2:web"
+  , resource  =? "desktop_window" --> doIgnore
+  , className =? "Galculator" --> doFloat
+  , className =? "Dialog" --> doFloat
+  , className =? "Steam" --> doFloat
+  , className =? "Gimp" --> doFloat
+  , resource  =? "gpicview" --> doFloat
+  , className =? "MPlayer" --> doFloat
+  , className =? "VirtualBox" --> doShift "4:vm"
+  , className =? "Xchat" --> doShift "5:media"
+  , className =? "stalonetray" --> doIgnore
+  , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
-
-------------------------------------------------------------------------
--- Layouts
--- You can specify and transform your layouts by modifying these values.
--- If you change layout bindings be sure to use 'mod-shift-space' after
--- restarting (with 'mod-q') to reset your layout state to the new
--- defaults, as xmonad preserves your old layout settings by default.
---
--- The available layouts.  Note that each layout is separated by |||,
--- which denotes layout choice.
---
 myLayout = avoidStruts (
-    ThreeColMid 1 (3/100) (1/2) |||
-    Tall 1 (3/100) (1/2) |||
-    Mirror (Tall 1 (3/100) (1/2)) |||
-    tabbed shrinkText tabConfig |||
-    Full |||
-    spiral (6/7)) |||
-    noBorders (fullscreenFull Full)
+  ThreeColMid 1 (3/100) (1/2) |||
+  Tall 1 (3/100) (1/2) |||
+  Mirror (Tall 1 (3/100) (1/2)) |||
+  tabbed shrinkText tabConfig |||
+  Full |||
+  spiral (6/7)) |||
+  noBorders (fullscreenFull Full)
 
-
-------------------------------------------------------------------------
--- Colors and borders
--- Currently based on the ir_black theme.
---
+myBorderWidth = 1
 myNormalBorderColor = "#7c7c7c"
 myFocusedBorderColor = "#ffb6b0"
 
--- Colors for text and backgrounds of each tab when in "Tabbed" layout.
 tabConfig = defaultTheme {
-    activeBorderColor = "#7C7C7C",
-    activeTextColor = "#CEFFAC",
-    activeColor = "#000000",
-    inactiveBorderColor = "#7C7C7C",
-    inactiveTextColor = "#EEEEEE",
-    inactiveColor = "#000000"
+  activeBorderColor = "#7C7C7C",
+  activeTextColor = "#CEFFAC",
+  activeColor = "#000000",
+  inactiveBorderColor = "#7C7C7C",
+  inactiveTextColor = "#EEEEEE",
+  inactiveColor = "#000000"
 }
 
--- Color of current window title in xmobar.
 xmobarTitleColor = "#FFB6B0"
-
--- Color of current workspace in xmobar.
 xmobarCurrentWorkspaceColor = "#CEFFAC"
 
--- Width of the window border in pixels.
-myBorderWidth = 1
-
-
-------------------------------------------------------------------------
--- Key bindings
---
--- modMask lets you specify which modkey you want to use. The default
--- is mod1Mask ("left alt").  You may also consider using mod3Mask
--- ("right alt"), which does not conflict with emacs keybindings. The
--- "windows key" is usually mod4Mask.
---
 myModMask = mod4Mask
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
@@ -179,68 +113,25 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_q),                               restart "xmonad" True)
   ]
   ++
-
-  -- mod-[1..9], Switch to workspace N
-  -- mod-shift-[1..9], Move client to workspace N
   [((m .|. modMask, k), windows $ f i)
     | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
     , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
   ++
-
-  -- mod-{w,e,r}, Switch to physical screens 1, 2, or 3
-  -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
   [((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
     | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
     , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
-
-------------------------------------------------------------------------
--- Mouse bindings
---
--- Focus rules
--- True if your focus should follow your mouse cursor.
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 
 myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
-  [
-    -- mod-button1, Set the window to floating mode and move by dragging
-    ((modMask, button1), (\w -> focus w >> mouseMoveWindow w))
-
-    -- mod-button2, Raise the window to the top of the stack
-    , ((modMask, button2), (\w -> focus w >> windows W.swapMaster))
-
-    -- mod-button3, Set the window to floating mode and resize by dragging
-    , ((modMask, button3), (\w -> focus w >> mouseResizeWindow w))
-
-    -- you may also bind events to the mouse scroll wheel (button4 and button5)
+  [ ((modMask, button1), (\w -> focus w >> mouseMoveWindow w))
+  , ((modMask, button2), (\w -> focus w >> windows W.swapMaster))
+  , ((modMask, button3), (\w -> focus w >> mouseResizeWindow w))
   ]
 
-
-------------------------------------------------------------------------
--- Status bars and logging
--- Perform an arbitrary action on each internal state change or X event.
--- See the 'DynamicLog' extension for examples.
---
--- To emulate dwm's status bar
---
--- > logHook = dynamicLogDzen
---
-
-
-------------------------------------------------------------------------
--- Startup hook
--- Perform an arbitrary action each time xmonad starts or is restarted
--- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
--- per-workspace layout choices.
---
--- By default, do nothing.
 myStartupHook = return ()
 
-
-------------------------------------------------------------------------
--- Run xmonad with all the defaults we set up.
---
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
   xmonad $ defaults {
@@ -255,16 +146,7 @@ main = do
   }
 
 
-------------------------------------------------------------------------
--- Combine it all together
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
--- No need to modify this.
---
 defaults = defaultConfig {
-  -- simple stuff
   terminal = myTerminal,
   focusFollowsMouse = myFocusFollowsMouse,
   borderWidth = myBorderWidth,
@@ -273,11 +155,9 @@ defaults = defaultConfig {
   normalBorderColor = myNormalBorderColor,
   focusedBorderColor = myFocusedBorderColor,
 
-  -- key bindings
   keys = myKeys,
   mouseBindings = myMouseBindings,
 
-  -- hooks, layouts
   layoutHook = smartBorders $ myLayout,
   manageHook = myManageHook,
   startupHook = myStartupHook
