@@ -33,6 +33,7 @@ myIncreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/
 myPreviousMedia = "playerctl previous"
 myNextMedia = "playerctl next"
 myPlayPause = "playerctl play-pause"
+myPointerDevice = "bcm5974"
 myBrowser = "firefox"
 myPrivateBrowser = "firefox --private-window"
 myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
@@ -115,6 +116,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_q),                    restart "xmonad" True)
   , ((modMask, xK_b),                    spawn myBrowser)
   , ((modMask .|. shiftMask, xK_b),      spawn myPrivateBrowser)
+  , ((modMask, xK_i),                    spawn $ "xinput --disable " ++ myPointerDevice)
+  , ((modMask .|. shiftMask, xK_i),      spawn $ "xinput --enable " ++ myPointerDevice)
   ]
   ++
   [((m .|. modMask, k), windows $ f i)
