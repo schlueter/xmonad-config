@@ -33,22 +33,24 @@ myIncreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/
 myPreviousMedia = "playerctl previous"
 myNextMedia = "playerctl next"
 myPlayPause = "playerctl play-pause"
-
+myBrowser = "firefox"
+myPrivateBrowser = "firefox --private-window"
 myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
 
 myManageHook = composeAll
   [ className =? "Chromium" --> doShift "2:web"
-  , className =? "Google-chrome" --> doShift "2:web"
-  , resource  =? "desktop_window" --> doIgnore
-  , className =? "Galculator" --> doFloat
   , className =? "Dialog" --> doFloat
-  , className =? "Steam" --> doFloat
+  , className =? "Galculator" --> doFloat
   , className =? "Gimp" --> doFloat
-  , resource  =? "gpicview" --> doFloat
+  , className =? "Google-chrome" --> doShift "2:web"
+  , className =? "Firefox" --> doShift "2:web"
   , className =? "MPlayer" --> doFloat
+  , className =? "Steam" --> doFloat
   , className =? "VirtualBox" --> doShift "4:vm"
   , className =? "Xchat" --> doShift "5:media"
   , className =? "stalonetray" --> doIgnore
+  , resource =? "desktop_window" --> doIgnore
+  , resource =? "gpicview" --> doFloat
   , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
 myLayout = avoidStruts (
@@ -79,38 +81,40 @@ xmobarCurrentWorkspaceColor = "#CEFFAC"
 myModMask = mod4Mask
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
-  [ ((modMask .|. shiftMask, xK_Return),            spawn $ XMonad.terminal conf)
-  , ((modMask .|. controlMask, xK_l),               spawn myScreensaver)
-  , ((modMask, xK_p),                               spawn myLauncher)
-  , ((modMask .|. shiftMask, xK_p),                 spawn mySelectScreenshot)
+  [ ((modMask .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
+  , ((modMask .|. controlMask, xK_l),    spawn myScreensaver)
+  , ((modMask, xK_p),                    spawn myLauncher)
+  , ((modMask .|. shiftMask, xK_p),      spawn mySelectScreenshot)
   , ((modMask .|. controlMask .|. shiftMask, xK_p), spawn myScreenshot)
-  , ((0, xF86XK_AudioMute),                         spawn myMuteToggle)
-  , ((modMask .|. controlMask, xK_m),               spawn myMuteToggle)
-  , ((0, xF86XK_AudioLowerVolume),                  spawn myDecreaseVolume)
-  , ((modMask .|. controlMask, xK_j),               spawn myDecreaseVolume)
-  , ((0, xF86XK_AudioRaiseVolume),                  spawn myIncreaseVolume)
-  , ((modMask .|. controlMask, xK_k),               spawn myIncreaseVolume)
-  , ((0, 0x1008FF16),                               spawn myPreviousMedia)
-  , ((0, 0x1008FF14),                               spawn myPlayPause)
-  , ((0, 0x1008FF17),                               spawn myNextMedia)
-  , ((modMask .|. shiftMask, xK_c),                 kill)
-  , ((modMask, xK_space),                           sendMessage NextLayout)
-  , ((modMask .|. shiftMask, xK_space),             setLayout $ XMonad.layoutHook conf)
-  , ((modMask, xK_n),                               refresh)
-  , ((modMask, xK_Tab),                             windows W.focusDown)
-  , ((modMask, xK_j),                               windows W.focusDown)
-  , ((modMask, xK_k),                               windows W.focusUp)
-  , ((modMask, xK_m),                               windows W.focusMaster)
-  , ((modMask, xK_Return),                          windows W.swapMaster)
-  , ((modMask .|. shiftMask, xK_j),                 windows W.swapDown)
-  , ((modMask .|. shiftMask, xK_k),                 windows W.swapUp)
-  , ((modMask, xK_h),                               sendMessage Shrink)
-  , ((modMask, xK_l),                               sendMessage Expand)
-  , ((modMask, xK_t),                               withFocused $ windows . W.sink)
-  , ((modMask, xK_comma),                           sendMessage (IncMasterN 1))
-  , ((modMask, xK_period),                          sendMessage (IncMasterN (-1)))
-  , ((modMask .|. shiftMask, xK_q),                 io (exitWith ExitSuccess))
-  , ((modMask, xK_q),                               restart "xmonad" True)
+  , ((0, xF86XK_AudioMute),              spawn myMuteToggle)
+  , ((modMask .|. controlMask, xK_m),    spawn myMuteToggle)
+  , ((0, xF86XK_AudioLowerVolume),       spawn myDecreaseVolume)
+  , ((modMask .|. controlMask, xK_j),    spawn myDecreaseVolume)
+  , ((0, xF86XK_AudioRaiseVolume),       spawn myIncreaseVolume)
+  , ((modMask .|. controlMask, xK_k),    spawn myIncreaseVolume)
+  , ((0, 0x1008FF16),                    spawn myPreviousMedia)
+  , ((0, 0x1008FF14),                    spawn myPlayPause)
+  , ((0, 0x1008FF17),                    spawn myNextMedia)
+  , ((modMask .|. shiftMask, xK_c),      kill)
+  , ((modMask, xK_space),                sendMessage NextLayout)
+  , ((modMask .|. shiftMask, xK_space),  setLayout $ XMonad.layoutHook conf)
+  , ((modMask, xK_n),                    refresh)
+  , ((modMask, xK_Tab),                  windows W.focusDown)
+  , ((modMask, xK_j),                    windows W.focusDown)
+  , ((modMask, xK_k),                    windows W.focusUp)
+  , ((modMask, xK_m),                    windows W.focusMaster)
+  , ((modMask, xK_Return),               windows W.swapMaster)
+  , ((modMask .|. shiftMask, xK_j),      windows W.swapDown)
+  , ((modMask .|. shiftMask, xK_k),      windows W.swapUp)
+  , ((modMask, xK_h),                    sendMessage Shrink)
+  , ((modMask, xK_l),                    sendMessage Expand)
+  , ((modMask, xK_t),                    withFocused $ windows . W.sink)
+  , ((modMask, xK_comma),                sendMessage (IncMasterN 1))
+  , ((modMask, xK_period),               sendMessage (IncMasterN (-1)))
+  , ((modMask .|. shiftMask, xK_q),      io (exitWith ExitSuccess))
+  , ((modMask, xK_q),                    restart "xmonad" True)
+  , ((modMask, xK_b),                    spawn myBrowser)
+  , ((modMask .|. shiftMask, xK_b),      spawn myPrivateBrowser)
   ]
   ++
   [((m .|. modMask, k), windows $ f i)
@@ -142,23 +146,19 @@ main = do
       , ppSep = "   "
     }
     , manageHook = manageDocks <+> myManageHook
-    , startupHook = setWMName "LG3D"
   }
 
-
 defaults = defaultConfig {
-  terminal = myTerminal,
-  focusFollowsMouse = myFocusFollowsMouse,
-  borderWidth = myBorderWidth,
-  modMask = myModMask,
-  workspaces = myWorkspaces,
-  normalBorderColor = myNormalBorderColor,
-  focusedBorderColor = myFocusedBorderColor,
-
-  keys = myKeys,
-  mouseBindings = myMouseBindings,
-
-  layoutHook = smartBorders $ myLayout,
-  manageHook = myManageHook,
-  startupHook = myStartupHook
+    borderWidth = myBorderWidth
+  , focusFollowsMouse = myFocusFollowsMouse
+  , focusedBorderColor = myFocusedBorderColor
+  , keys = myKeys
+  , layoutHook = smartBorders $ myLayout
+  , manageHook = myManageHook
+  , modMask = myModMask
+  , mouseBindings = myMouseBindings
+  , normalBorderColor = myNormalBorderColor
+  , startupHook = myStartupHook
+  , terminal = myTerminal
+  , workspaces = myWorkspaces
 }
