@@ -36,20 +36,26 @@ myPlayPause = "playerctl play-pause"
 myPointerDevice = "bcm5974"
 myBrowser = "firefox"
 myPrivateBrowser = "firefox --private-window"
-myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
+myApp1 = "slack"
+myApp2 = "spotify"
+clipboardManager = "clipmenu"
+toggleInput = "toggle-macbook-trackpad"
+myWorkspaces = ["1:term","2:web","3:comms","4:media"] ++ map show [5..9]
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = True
+
 
 myManageHook = composeAll
   [ className =? "Chromium" --> doShift "2:web"
   , className =? "Dialog" --> doFloat
-  , className =? "Galculator" --> doFloat
   , className =? "Gimp" --> doFloat
+  , className =? "terminology" --> doShift "1:term"
   , className =? "Google-chrome" --> doShift "2:web"
   , className =? "Firefox" --> doShift "2:web"
+  , className =? "Slack" --> doShift "3:comms"
+  , className =? "Spotify" --> doShift "4:media"
   , className =? "MPlayer" --> doFloat
   , className =? "Steam" --> doFloat
-  , className =? "VirtualBox" --> doShift "4:vm"
-  , className =? "Xchat" --> doShift "5:media"
-  , className =? "stalonetray" --> doIgnore
   , resource =? "desktop_window" --> doIgnore
   , resource =? "gpicview" --> doFloat
   , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
@@ -87,26 +93,17 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_p),                    spawn myLauncher)
   , ((modMask .|. shiftMask, xK_p),      spawn mySelectScreenshot)
   , ((modMask .|. controlMask .|. shiftMask, xK_p), spawn myScreenshot)
-  , ((0, xF86XK_AudioMute),              spawn myMuteToggle)
-  , ((modMask .|. controlMask, xK_m),    spawn myMuteToggle)
-  , ((0, xF86XK_AudioLowerVolume),       spawn myDecreaseVolume)
-  , ((modMask .|. controlMask, xK_j),    spawn myDecreaseVolume)
-  , ((0, xF86XK_AudioRaiseVolume),       spawn myIncreaseVolume)
-  , ((modMask .|. controlMask, xK_k),    spawn myIncreaseVolume)
-  , ((0, 0x1008FF16),                    spawn myPreviousMedia)
-  , ((0, 0x1008FF14),                    spawn myPlayPause)
-  , ((0, 0x1008FF17),                    spawn myNextMedia)
-  , ((modMask .|. shiftMask, xK_c),      kill)
+  , ((modMask .|. shiftMask, xK_k),      kill)
   , ((modMask, xK_space),                sendMessage NextLayout)
   , ((modMask .|. shiftMask, xK_space),  setLayout $ XMonad.layoutHook conf)
   , ((modMask, xK_n),                    refresh)
   , ((modMask, xK_Tab),                  windows W.focusDown)
-  , ((modMask, xK_j),                    windows W.focusDown)
-  , ((modMask, xK_k),                    windows W.focusUp)
+  , ((modMask .|. shiftMask, xK_Tab),    windows W.focusUp)
   , ((modMask, xK_m),                    windows W.focusMaster)
   , ((modMask, xK_Return),               windows W.swapMaster)
-  , ((modMask .|. shiftMask, xK_j),      windows W.swapDown)
-  , ((modMask .|. shiftMask, xK_k),      windows W.swapUp)
+  , ((modMask .|. controlMask, xK_j),    windows W.swapDown)
+  , ((modMask .|. controlMask, xK_k),    windows W.swapUp)
+  , ((modMask, xK_backslash),            spawn clipboardManager)
   , ((modMask, xK_h),                    sendMessage Shrink)
   , ((modMask, xK_l),                    sendMessage Expand)
   , ((modMask, xK_t),                    withFocused $ windows . W.sink)
@@ -116,8 +113,15 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_q),                    restart "xmonad" True)
   , ((modMask, xK_b),                    spawn myBrowser)
   , ((modMask .|. shiftMask, xK_b),      spawn myPrivateBrowser)
-  , ((modMask, xK_i),                    spawn $ "xinput --disable " ++ myPointerDevice)
-  , ((modMask .|. shiftMask, xK_i),      spawn $ "xinput --enable " ++ myPointerDevice)
+  , ((modMask, xK_i),                    spawn toggleInput)
+  , ((modMask .|. controlMask, xK_1),    spawn myApp1)
+  , ((modMask .|. controlMask, xK_2),    spawn myApp2)
+  , ((0, xF86XK_AudioMute),              spawn myMuteToggle)
+  , ((0, xF86XK_AudioLowerVolume),       spawn myDecreaseVolume)
+  , ((0, xF86XK_AudioRaiseVolume),       spawn myIncreaseVolume)
+  , ((0, 0x1008FF16),                    spawn myPreviousMedia)
+  , ((0, 0x1008FF14),                    spawn myPlayPause)
+  , ((0, 0x1008FF17),                    spawn myNextMedia)
   ]
   ++
   [((m .|. modMask, k), windows $ f i)
@@ -128,16 +132,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
     , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
-myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True
-
 myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
   [ ((modMask, button1), (\w -> focus w >> mouseMoveWindow w))
   , ((modMask, button2), (\w -> focus w >> windows W.swapMaster))
   , ((modMask, button3), (\w -> focus w >> mouseResizeWindow w))
   ]
-
-myStartupHook = return ()
 
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
@@ -161,7 +160,6 @@ defaults = defaultConfig {
   , modMask = myModMask
   , mouseBindings = myMouseBindings
   , normalBorderColor = myNormalBorderColor
-  , startupHook = myStartupHook
   , terminal = myTerminal
   , workspaces = myWorkspaces
 }
