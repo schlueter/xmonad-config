@@ -32,22 +32,12 @@ myIncreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/
 myPreviousMedia = "playerctl previous"
 myNextMedia = "playerctl next"
 myPlayPause = "playerctl play-pause"
-myPointerDevice = "bcm5974"
 myBrowser = "firefox"
 myPrivateBrowser = "firefox --private-window"
 myApp1 = "slack"
 myApp2 = "spotify"
 clipboardManager = "clipmenu"
 toggleInput = "toggle-macbook-trackpad"
-
-tabConfig = defaultTheme
-  { activeBorderColor = "#7C7C7C"
-  , activeTextColor = "#CEFFAC"
-  , activeColor = "#000000"
-  , inactiveBorderColor = "#7C7C7C"
-  , inactiveTextColor = "#EEEEEE"
-  , inactiveColor = "#000000"
-  }
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   [ ((modMask .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
@@ -101,52 +91,57 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
   ]
 
 myManageHook = composeAll
-      [ className =? "Chromium" --> doShift "2:web"
-      , className =? "Dialog" --> doFloat
-      , className =? "Gimp" --> doFloat
-      , className =? "terminology" --> doShift "1:term"
-      , className =? "Google-chrome" --> doShift "2:web"
-      , className =? "Firefox" --> doShift "2:web"
-      , className =? "Slack" --> doShift "3:comms"
-      , className =? "Spotify" --> doShift "4:media"
-      , className =? "MPlayer" --> doFloat
-      , className =? "Steam" --> doFloat
-      , resource =? "desktop_window" --> doIgnore
-      , resource =? "gpicview" --> doFloat
-      , isFullscreen --> (doF W.focusDown <+> doFullFloat)
-      ]
+  [ className =? "Chromium" --> doShift "2:web"
+  , className =? "Dialog" --> doFloat
+  , className =? "Gimp" --> doFloat
+  , className =? "terminology" --> doShift "1:term"
+  , className =? "Google-chrome" --> doShift "2:web"
+  , className =? "Firefox" --> doShift "2:web"
+  , className =? "Slack" --> doShift "3:comms"
+  , className =? "Spotify" --> doShift "4:media"
+  , className =? "MPlayer" --> doFloat
+  , className =? "Steam" --> doFloat
+  , resource =? "desktop_window" --> doIgnore
+  , resource =? "gpicview" --> doFloat
+  , isFullscreen --> (doF W.focusDown <+> doFullFloat)
+  ]
 
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
-  xmonad $ defaults
-    { logHook = dynamicLogWithPP $ xmobarPP {
-        ppOutput = hPutStrLn xmproc
-      , ppTitle = xmobarColor "#FFB6B0" "" . shorten 100
-      , ppCurrent = xmobarColor "#CEFFAC" ""
-      , ppSep = "   "
-      }
+  xmonad $  defaultConfig
+    { borderWidth = 1
+    , clickJustFocuses = False
+    -- , clientMask =
+    , focusFollowsMouse = False
+    , focusedBorderColor = "#ffb6b0"
+    -- , handleEventHook =
+    -- , handleExtraArgs =
+    , keys = myKeys
+    , layoutHook = smartBorders $ avoidStruts (
+        Tall 1 (3/100) (1/2) |||
+        Mirror (Tall 1 (3/100) (1/2)) |||
+        tabbed shrinkText defaultTheme
+          { activeBorderColor = "#7C7C7C"
+          , activeTextColor = "#CEFFAC"
+          , activeColor = "#000000"
+          , inactiveBorderColor = "#7C7C7C"
+          , inactiveTextColor = "#EEEEEE"
+          , inactiveColor = "#000000"
+          } |||
+        spiral (6/7)
+      ) ||| noBorders (fullscreenFull Full)
+    , logHook = dynamicLogWithPP $ xmobarPP {
+          ppOutput = hPutStrLn xmproc
+        , ppTitle = xmobarColor "#FFB6B0" "" . shorten 100
+        , ppCurrent = xmobarColor "#CEFFAC" ""
+        , ppSep = "   "
+        }
     , manageHook = manageDocks <+> myManageHook
+    , modMask = mod4Mask
+    , mouseBindings = myMouseBindings
+    , normalBorderColor = "#7c7c7c"
+    -- , rootMask =
+    -- , startupHook =
+    , terminal = "/usr/bin/terminology"
+    , workspaces = ["1:term","2:web","3:comms","4:media"] ++ map show [5..9]
     }
-
-defaults = defaultConfig
-  { borderWidth = 1
-  , clickJustFocuses = False
-  -- , clientMask =
-  , focusFollowsMouse = False
-  , focusedBorderColor = "#ffb6b0"
-  -- , handleEventHook =
-  -- , handleExtraArgs =
-  , keys = myKeys
-  , layoutHook = smartBorders $ avoidStruts (
-      Tall 1 (3/100) (1/2) |||
-      Mirror (Tall 1 (3/100) (1/2)) |||
-      tabbed shrinkText tabConfig |||
-      spiral (6/7)
-    ) ||| noBorders (fullscreenFull Full)
-  , manageHook = myManageHook
-  , modMask = mod4Mask
-  , mouseBindings = myMouseBindings
-  , normalBorderColor = "#7c7c7c"
-  , terminal = "/usr/bin/terminology"
-  , workspaces = ["1:term","2:web","3:comms","4:media"] ++ map show [5..9]
-}
