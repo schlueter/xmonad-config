@@ -64,6 +64,7 @@ main = do
         , className =? "Gimp" --> doFloat
         , className =? "MPlayer" --> doFloat
         , className =? "Steam" --> doFloat
+        , className =? "Xmessage" --> doFloat
         , resource =? "desktop_window" --> doIgnore
         , resource =? "gpicview" --> doFloat
         , isFullscreen --> doFullFloat
