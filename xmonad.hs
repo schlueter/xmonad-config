@@ -1,26 +1,16 @@
 -- Author: Brandon Schlueter
 
--- Based on:
---   http://github.com/vicfryzel/xmonad-config
-
 import Graphics.X11.ExtraTypes.XF86
-import System.Exit
 import System.IO
 import XMonad
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.SetWMName
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
-import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
-import XMonad.Layout.ThreeColumns
 import XMonad.Util.CustomKeys
-import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Util.Run(spawnPipe)
-import qualified XMonad.StackSet as W
-import qualified Data.Map        as M
 
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
 mySelectScreenshot = "select-screenshot"
@@ -34,8 +24,6 @@ myNextMedia = "playerctl next"
 myPlayPause = "playerctl play-pause"
 myBrowser = "firefox"
 myPrivateBrowser = "firefox --private-window"
-myApp1 = "slack"
-myApp2 = "spotify"
 clipboardManager = "clipmenu"
 toggleInput = "toggle-macbook-trackpad"
 
@@ -68,9 +56,7 @@ main = do
     , layoutHook = smartBorders $
         avoidStruts (
               Tall 1 (3/100) (1/2)
-          ||| Mirror (Tall 1 (3/100) (1/2))
           ||| tabbed shrinkText defaultTheme
-          ||| spiral (6/7)
       ) ||| noBorders (fullscreenFull Full)
     , logHook = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc }
     , manageHook = manageDocks <+> composeAll
@@ -80,7 +66,7 @@ main = do
         , className =? "Steam" --> doFloat
         , resource =? "desktop_window" --> doIgnore
         , resource =? "gpicview" --> doFloat
-        , isFullscreen --> (doF W.focusDown <+> doFullFloat)
+        , isFullscreen --> doFullFloat
         ]
     , modMask = mod4Mask
     , terminal = "/usr/bin/terminology"
