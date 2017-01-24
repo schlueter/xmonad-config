@@ -57,7 +57,7 @@ main = do
     { keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $
         avoidStruts ( Tall 1 (3/100) (1/2)
-                    ||| tabbed shrinkText defaultTheme
+                    ||| tabbed shrinkText defaultTheme { activeColor = "#000000" }
         ) ||| noBorders (fullscreenFull Full)
     , logHook = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc }
     , manageHook = manageDocks <+> composeAll
