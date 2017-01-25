@@ -31,7 +31,7 @@ instance UrgencyHook LibNotifyUrgencyHook where
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
 myScreenshot = "scrot '%F-%T_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots'"
 myFocusedScreenshot = myScreenshot ++ " -u"
-myLauncher = "yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*'"
+myLauncher = "$(yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*')"
 myVolumeControl = "volume-control"
 myNotify = "notify-send -h string:x-canonical-private-synchronous:anything"
 myPreviousMedia = "playerctl previous"
