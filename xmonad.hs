@@ -7,12 +7,26 @@ import XMonad
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.UrgencyHook
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.Tabbed
 import XMonad.Util.CustomKeys
+import XMonad.Util.NamedWindows
+import XMonad.Util.Run
 import XMonad.Util.Run(spawnPipe)
 
+import qualified XMonad.StackSet as W
+
+
+data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
+
+instance UrgencyHook LibNotifyUrgencyHook where
+    urgencyHook LibNotifyUrgencyHook w = do
+        name     <- getName w
+        Just idx <- fmap (W.findTag w) $ gets windowset
+
+        safeSpawn "notify-send" [show name, "workspace " ++ idx]
 
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
 myScreenshot = "scrot '%F-%T_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots'"
@@ -53,7 +67,8 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
 
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
-  xmonad $ defaultConfig
+  xmonad $ withUrgencyHook LibNotifyUrgencyHook
+         $ defaultConfig
     { keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $
         avoidStruts ( Tall 1 (3/100) (1/2)
