@@ -7,8 +7,6 @@
 
 Config { font = "xft:Fixed-8"
        , additionalFonts = []
-       , bgColor = "#000000"
-       , fgColor = "#ffffff"
        , position = Top
        , lowerOnStart = True
        , pickBroadest = True

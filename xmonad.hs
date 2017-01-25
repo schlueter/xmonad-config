@@ -31,10 +31,9 @@ instance UrgencyHook LibNotifyUrgencyHook where
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
 myScreenshot = "scrot '%F-%T_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots'"
 myFocusedScreenshot = myScreenshot ++ " -u"
-myLauncher = "$(yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*' -nb '#000000' -nf '#FFFFFF' -sb '#7C7C7C' -sf '#CEFFAC')"
-myMuteToggle = "pactl set-sink-mute $(pacmd list-sinks | grep '*' | awk '/\\*/{ print $3}') toggle"
-myDecreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/\\*/{ print $3}') -1%"
-myIncreaseVolume = "pactl set-sink-volume $(pacmd list-sinks | grep '*' | awk '/\\*/{ print $3}') +1%"
+myLauncher = "yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*'"
+myVolumeControl = "volume-control"
+myNotify = "notify-send -h string:x-canonical-private-synchronous:anything"
 myPreviousMedia = "playerctl previous"
 myNextMedia = "playerctl next"
 myPlayPause = "playerctl play-pause"
@@ -57,9 +56,16 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
   , ((modMask, xK_b),                    spawn myBrowser)
   , ((modMask .|. shiftMask, xK_b),      spawn myPrivateBrowser)
   , ((modMask, xK_i),                    spawn toggleInput)
-  , ((0, xF86XK_AudioMute),              spawn myMuteToggle)
-  , ((0, xF86XK_AudioLowerVolume),       spawn myDecreaseVolume)
-  , ((0, xF86XK_AudioRaiseVolume),       spawn myIncreaseVolume)
+  , ((0, xF86XK_AudioMute),
+     spawn (myVolumeControl ++ " --toggle-mute;" ++ myNotify ++ " $(" ++ myVolumeControl ++ " --mute-state)"))
+  , ((0, xF86XK_AudioLowerVolume),
+     spawn (myVolumeControl ++ " -1%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
+  , ((0, xF86XK_AudioRaiseVolume),
+     spawn (myVolumeControl ++ " +1%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
+  , ((0 .|. shiftMask, xF86XK_AudioLowerVolume),
+     spawn (myVolumeControl ++ " -10%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
+  , ((0 .|. shiftMask, xF86XK_AudioRaiseVolume),
+     spawn (myVolumeControl ++ " +10%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
   , ((0, xF86XK_AudioPrev),              spawn myPreviousMedia)
   , ((0, xF86XK_AudioPlay),              spawn myPlayPause)
   , ((0, xF86XK_AudioNext),              spawn myNextMedia)
