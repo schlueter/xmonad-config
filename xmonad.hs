@@ -56,16 +56,11 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
   , ((modMask, xK_b),                    spawn myBrowser)
   , ((modMask .|. shiftMask, xK_b),      spawn myPrivateBrowser)
   , ((modMask, xK_i),                    spawn toggleInput)
-  , ((0, xF86XK_AudioMute),
-     spawn (myVolumeControl ++ " --toggle-mute;" ++ myNotify ++ " $(" ++ myVolumeControl ++ " --mute-state)"))
-  , ((0, xF86XK_AudioLowerVolume),
-     spawn (myVolumeControl ++ " -1%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
-  , ((0, xF86XK_AudioRaiseVolume),
-     spawn (myVolumeControl ++ " +1%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
-  , ((0 .|. shiftMask, xF86XK_AudioLowerVolume),
-     spawn (myVolumeControl ++ " -10%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
-  , ((0 .|. shiftMask, xF86XK_AudioRaiseVolume),
-     spawn (myVolumeControl ++ " +10%; " ++ myNotify ++ " $(" ++ myVolumeControl ++ ")"))
+  , ((0, xF86XK_AudioMute), spawn (myVolumeControl ++ " toggle-mute"))
+  , ((0, xF86XK_AudioLowerVolume), spawn (myVolumeControl ++ " -1%"))
+  , ((0, xF86XK_AudioRaiseVolume), spawn (myVolumeControl ++ " +1%"))
+  , ((0 .|. shiftMask, xF86XK_AudioLowerVolume), spawn (myVolumeControl ++ " -10%"))
+  , ((0 .|. shiftMask, xF86XK_AudioRaiseVolume), spawn (myVolumeControl ++ " +10%"))
   , ((0, xF86XK_AudioPrev),              spawn myPreviousMedia)
   , ((0, xF86XK_AudioPlay),              spawn myPlayPause)
   , ((0, xF86XK_AudioNext),              spawn myNextMedia)
