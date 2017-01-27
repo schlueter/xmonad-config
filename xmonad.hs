@@ -32,11 +32,8 @@ myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
 myScreenshot = "scrot '%F-%T_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots'"
 myFocusedScreenshot = myScreenshot ++ " -u"
 myLauncher = "$(yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*')"
-myVolumeControl = "volume-control"
+myMediaControl = "media-control"
 myNotify = "notify-send -h string:x-canonical-private-synchronous:anything"
-myPreviousMedia = "playerctl previous"
-myNextMedia = "playerctl next"
-myPlayPause = "playerctl play-pause"
 myBrowser = "firefox"
 myPrivateBrowser = "firefox --private-window"
 clipboardManager = "clipmenu"
@@ -56,14 +53,14 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
   , ((modMask, xK_b),                    spawn myBrowser)
   , ((modMask .|. shiftMask, xK_b),      spawn myPrivateBrowser)
   , ((modMask, xK_i),                    spawn toggleInput)
-  , ((0, xF86XK_AudioMute), spawn (myVolumeControl ++ " toggle-mute"))
-  , ((0, xF86XK_AudioLowerVolume), spawn (myVolumeControl ++ " -1%"))
-  , ((0, xF86XK_AudioRaiseVolume), spawn (myVolumeControl ++ " +1%"))
-  , ((0 .|. shiftMask, xF86XK_AudioLowerVolume), spawn (myVolumeControl ++ " -10%"))
-  , ((0 .|. shiftMask, xF86XK_AudioRaiseVolume), spawn (myVolumeControl ++ " +10%"))
-  , ((0, xF86XK_AudioPrev),              spawn myPreviousMedia)
-  , ((0, xF86XK_AudioPlay),              spawn myPlayPause)
-  , ((0, xF86XK_AudioNext),              spawn myNextMedia)
+  , ((0, xF86XK_AudioPrev),              spawn (myMediaControl ++ "previous"))
+  , ((0, xF86XK_AudioPlay),              spawn (myMediaControl ++ "play-pause"))
+  , ((0, xF86XK_AudioNext),              spawn (myMediaControl ++ "next"))
+  , ((0, xF86XK_AudioMute), spawn (myMediaControl ++ " toggle-mute"))
+  , ((0, xF86XK_AudioLowerVolume), spawn (myMediaControl ++ " -1%"))
+  , ((0, xF86XK_AudioRaiseVolume), spawn (myMediaControl ++ " +1%"))
+  , ((0 .|. shiftMask, xF86XK_AudioLowerVolume), spawn (myMediaControl ++ " -10%"))
+  , ((0 .|. shiftMask, xF86XK_AudioRaiseVolume), spawn (myMediaControl ++ " +10%"))
   ]
 
 main = do
@@ -79,12 +76,8 @@ main = do
     , manageHook = manageDocks <+> composeAll
         [ className =? "Dialog" --> doFloat
         , className =? "Gimp" --> doFloat
-        , className =? "MPlayer" --> doFloat
-        , className =? "Steam" --> doFloat
         , className =? "Xmessage" --> doFloat
         , resource =? "desktop_window" --> doIgnore
-        , resource =? "gpicview" --> doFloat
-        , resource =? "feh" --> doFloat
         , isFullscreen --> doFullFloat
         ]
     , modMask = mod4Mask
