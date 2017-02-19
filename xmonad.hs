@@ -19,15 +19,6 @@ import XMonad.Util.Run(spawnPipe)
 import qualified XMonad.StackSet as W
 
 
-data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
-
-instance UrgencyHook LibNotifyUrgencyHook where
-    urgencyHook LibNotifyUrgencyHook w = do
-        name     <- getName w
-        Just idx <- fmap (W.findTag w) $ gets windowset
-
-        safeSpawn "notify-send" [show name, "workspace " ++ idx]
-
 myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
 myScreenshot = "scrot '%F-%T_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots'"
 myFocusedScreenshot = myScreenshot ++ " -u"
@@ -38,6 +29,7 @@ myBrowser = "firefox"
 myPrivateBrowser = "firefox --private-window"
 clipboardManager = "clipmenu"
 toggleInput = "toggle-macbook-trackpad"
+powerButton = "/etc/acpi/powerbtn.sh"
 
 delkeys :: XConfig l -> [(KeyMask, KeySym)]
 delkeys XConfig {XMonad.modMask = modMask} =
@@ -59,12 +51,11 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
   , ((0, xF86XK_AudioMute), spawn (myMediaControl ++ "toggle-mute"))
   , ((0, xF86XK_AudioLowerVolume), spawn (myMediaControl ++ "-1%"))
   , ((0, xF86XK_AudioRaiseVolume), spawn (myMediaControl ++ "+1%"))
+  , ((0, xF86XK_PowerOff), spawn powerButton)
   , ((0 .|. shiftMask, xF86XK_AudioLowerVolume), spawn (myMediaControl ++ "-10%"))
   , ((0 .|. shiftMask, xF86XK_AudioRaiseVolume), spawn (myMediaControl ++ "+10%"))
   ]
   ++
-  -- mod-{w,e,r}, Switch to physical screens 1, 2, or 3
-  -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
   -- These have to be added back because they go away for some reason
   [((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
     | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
@@ -72,12 +63,13 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
 
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
-  xmonad $ withUrgencyHook LibNotifyUrgencyHook
-         $ defaultConfig
-    { keys = customKeys delkeys inskeys
+  xmonad $ defaultConfig
+    { focusFollowsMouse = False
+    , keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $
-        avoidStruts ( Tall 1 (3/100) (1/2)
-                    ||| tabbed shrinkText defaultTheme { activeColor = "#000000" }
+        avoidStruts
+        ( Tall 1 (3/100) (1/2)
+          ||| tabbed shrinkText defaultTheme { activeColor = "#000000" }
         ) ||| noBorders (fullscreenFull Full)
     , logHook = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc }
     , manageHook = manageDocks <+> composeAll
