@@ -1,24 +1,16 @@
 -- Author: Brandon Schlueter
 
 import Graphics.X11.ExtraTypes.XF86
-import System.IO
 
 import XMonad
-import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.UrgencyHook
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
-import XMonad.Layout.Tabbed
-import XMonad.Util.CustomKeys
-import XMonad.Util.NamedWindows
-import XMonad.Util.Run
-import XMonad.Util.Run(spawnPipe)
 import XMonad.Prompt
 import XMonad.Prompt.Shell
-
-import qualified XMonad.StackSet as W
+import XMonad.StackSet as SS
+import XMonad.Util.CustomKeys
+import XMonad.Util.Run(spawnPipe)
 
 
 myMediaControl = "media-control "
@@ -47,29 +39,12 @@ inskeys conf@(XConfig {XMonad.modMask = modMask}) =
   ++
   [((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
     | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
-    , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
-
-layout = tiled ||| full
-  where
-     -- default tiling algorithm partitions the screen into two panes
-     tiled = Tall nmaster ratio delta
-
-     -- The default number of windows in the master pane
-     nmaster = 1
-
-     -- Default proportion of screen occupied by master pane
-     ratio = 1/2
-
-     -- Percent of screen to increment by when resizing panes
-     delta = 3/100
-
-     -- Clean fullscreen
-     full = noBorders $ fullscreenFull Full
+    , (f, m) <- [(SS.view, 0), (SS.shift, shiftMask)]]
 
 main = do
   xmonad $ defaultConfig
     { keys = customKeys delkeys inskeys
-    , layoutHook = layout
+    , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
     , modMask = mod4Mask
     , terminal = "/usr/bin/terminology"
     }
