@@ -1,45 +1,24 @@
 -- Author: Brandon Schlueter
 
-import Graphics.X11.ExtraTypes.XF86
+import Graphics.X11.ExtraTypes.XF86 ( xF86XK_PowerOff
+                                    , xF86XK_AudioPrev
+                                    , xF86XK_AudioPlay
+                                    , xF86XK_AudioNext
+                                    , xF86XK_AudioMute
+                                    , xF86XK_AudioLowerVolume
+                                    , xF86XK_AudioRaiseVolume
+                                    )
 
+-- Too much to list/how do I explicitly include |||?
 import XMonad
-import XMonad.Hooks.ManageDocks
-import XMonad.Layout.Fullscreen
-import XMonad.Layout.NoBorders
-import XMonad.Prompt
-import XMonad.Prompt.Shell
-import XMonad.StackSet as SS
-import XMonad.Util.CustomKeys
+import XMonad.Hooks.ManageDocks (avoidStruts)
+import XMonad.Layout.Fullscreen (fullscreenFull)
+import XMonad.Layout.NoBorders (noBorders, smartBorders)
+import XMonad.Prompt.Shell (shellPrompt)
+import XMonad.StackSet (shift, view)
+import XMonad.Util.CustomKeys (customKeys)
 import XMonad.Util.Run(spawnPipe)
 
-
-myMediaControl = "media-control "
-
-delkeys :: XConfig l -> [(KeyMask, KeySym)]
-delkeys XConfig {XMonad.modMask = modMask} =
-  [ (modMask .|. m, k) | (m, k) <- zip [0, shiftMask] [xK_w, xK_e, xK_r] ]
-
-inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
-inskeys conf@(XConfig {XMonad.modMask = modMask}) =
-  [ ((modMask .|. controlMask, xK_l), spawn ("notifier Locking; xscreensaver-command -lock"))
-  , ((modMask, xK_p), shellPrompt def)
-  , ((modMask, xK_backslash), spawn "clipmenu")
-  , ((modMask, xK_b), spawn "firefox")
-  , ((modMask .|. shiftMask, xK_b), spawn "firefox --private-window")
-  , ((0, xF86XK_PowerOff), spawn "/etc/acpi/powerbtn.sh")
-  , ((0, xF86XK_AudioPrev), spawn (myMediaControl ++ "previous"))
-  , ((0, xF86XK_AudioPlay), spawn (myMediaControl ++ "play-pause"))
-  , ((0, xF86XK_AudioNext), spawn (myMediaControl ++ "next"))
-  , ((0, xF86XK_AudioMute), spawn (myMediaControl ++ "toggle-mute"))
-  , ((0, xF86XK_AudioLowerVolume), spawn (myMediaControl ++ "-1"))
-  , ((0, xF86XK_AudioRaiseVolume), spawn (myMediaControl ++ "+1"))
-  , ((shiftMask, xF86XK_AudioLowerVolume), spawn (myMediaControl ++ "-"))
-  , ((shiftMask, xF86XK_AudioRaiseVolume), spawn (myMediaControl ++ "+"))
-  ]
-  ++
-  [((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
-    | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
-    , (f, m) <- [(SS.view, 0), (SS.shift, shiftMask)]]
 
 main = do
   xmonad $ defaultConfig
@@ -48,3 +27,44 @@ main = do
     , modMask = mod4Mask
     , terminal = "/usr/bin/terminology"
     }
+
+inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
+inskeys conf@(XConfig {modMask = modMask}) =
+  -- modMask + key executes arg
+  [((modMask, k), a) | (k, a) <-
+    [ (xK_p,         shellPrompt def)
+    , (xK_backslash, spawn "clipmenu")
+    , (xK_b,         spawn "firefox")
+    ]]
+  ++
+  -- Shift + Media key executes media control
+  [((shiftMask, k), (media_control m)) | (k, m) <-
+    [ (xF86XK_AudioLowerVolume, "-")
+    , (xF86XK_AudioRaiseVolume, "+")
+    ]]
+  ++
+  -- Media key executes media control
+  [((0, k), (media_control m)) | (k, m) <-
+    [ (xF86XK_AudioPrev,        "previous")
+    , (xF86XK_AudioPlay,        "play-pause")
+    , (xF86XK_AudioNext,        "next")
+    , (xF86XK_AudioMute,        "toggle-mute")
+    , (xF86XK_AudioLowerVolume, "-1")
+    , (xF86XK_AudioRaiseVolume, "+1")
+    ]]
+  ++
+  -- modMask + control + l
+  [ ((modMask .|. controlMask, xK_l),       spawn "notifier Locking; xscreensaver-command -lock")
+  -- modMask + shift + l
+  , ((modMask .|. shiftMask, xK_b),         spawn "firefox --private-window")
+  -- Power button
+  , ((0, xF86XK_PowerOff),                  spawn "/etc/acpi/powerbtn.sh")
+  ]
+
+-- Delete no default keys
+delkeys :: XConfig l -> [(KeyMask, KeySym)]
+delkeys XConfig {} = []
+
+-- Execute `media-control x`
+media_control :: MonadIO m => String -> m()
+media_control x = spawn (unwords ["media-control", x]) >> return ()
