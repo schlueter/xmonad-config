@@ -20,7 +20,7 @@ import XMonad.Util.CustomKeys (customKeys)
 import XMonad.Util.Run(spawnPipe)
 
 
-main = do
+main =
   xmonad $ defaultConfig
     { keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
@@ -29,7 +29,7 @@ main = do
     }
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
-inskeys conf@(XConfig {modMask = modMask}) =
+inskeys conf@XConfig {modMask = modMask} =
   -- modMask + key executes arg
   [((modMask, k), a) | (k, a) <-
     [ (xK_p,         shellPrompt def)
@@ -38,13 +38,13 @@ inskeys conf@(XConfig {modMask = modMask}) =
     ]]
   ++
   -- Shift + Media key executes media control
-  [((shiftMask, k), (media_control m)) | (k, m) <-
+  [((shiftMask, k), mediaControl m) | (k, m) <-
     [ (xF86XK_AudioLowerVolume, "-")
     , (xF86XK_AudioRaiseVolume, "+")
     ]]
   ++
   -- Media key executes media control
-  [((0, k), (media_control m)) | (k, m) <-
+  [((0, k), mediaControl m) | (k, m) <-
     [ (xF86XK_AudioPrev,        "previous")
     , (xF86XK_AudioPlay,        "play-pause")
     , (xF86XK_AudioNext,        "next")
@@ -66,5 +66,5 @@ delkeys :: XConfig l -> [(KeyMask, KeySym)]
 delkeys XConfig {} = []
 
 -- Execute `media-control x`
-media_control :: MonadIO m => String -> m()
-media_control x = spawn (unwords ["media-control", x]) >> return ()
+mediaControl :: MonadIO m => String -> m()
+mediaControl x = spawn (unwords ["media-control", x])
