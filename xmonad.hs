@@ -25,7 +25,7 @@ main =
     { keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
     , modMask = mod4Mask
-    , terminal = "/usr/bin/terminology"
+    , terminal = "/usr/local/bin/st"
     }
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
@@ -56,7 +56,7 @@ inskeys conf@XConfig {modMask = modMask} =
   -- modMask + control + l
   [ ((modMask .|. controlMask, xK_l),       spawn "notifier Locking; xscreensaver-command -lock")
   -- modMask + shift + l
-  , ((modMask .|. shiftMask, xK_b),         spawn "firefox --private-window")
+  , ((modMask .|. shiftMask, xK_b),         spawn "chromium-browser --incognito")
   -- Power button
   , ((0, xF86XK_PowerOff),                  spawn "/etc/acpi/powerbtn.sh")
   ]
