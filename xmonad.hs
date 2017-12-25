@@ -20,12 +20,14 @@ import XMonad.Util.CustomKeys (customKeys)
 import XMonad.Util.Run(spawnPipe)
 
 
+altMask = mod1Mask
+
 main =
   xmonad $ defaultConfig
     { keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
     , modMask = mod4Mask
-    , terminal = "/usr/local/bin/st"
+    , terminal = "exec st"
     }
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
@@ -34,7 +36,7 @@ inskeys conf@XConfig {modMask = modMask} =
   [((modMask, k), a) | (k, a) <-
     [ (xK_p,         shellPrompt def)
     , (xK_backslash, spawn "clipmenu")
-    , (xK_b,         spawn "firefox")
+    , (xK_b,         spawn "exec firefox")
     ]]
   ++
   -- Shift + Media key executes media control
@@ -57,6 +59,8 @@ inskeys conf@XConfig {modMask = modMask} =
   [ ((modMask .|. controlMask, xK_l),       spawn "notifier Locking; xscreensaver-command -lock")
   -- modMask + shift + l
   , ((modMask .|. shiftMask, xK_b),         spawn "chromium-browser --incognito")
+  -- modMask + alt + space
+  , ((modMask .|. altMask, xK_space),       spawn "cycle-keyboard-layout dvorak us")
   -- Power button
   , ((0, xF86XK_PowerOff),                  spawn "/etc/acpi/powerbtn.sh")
   ]
