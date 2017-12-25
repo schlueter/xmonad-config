@@ -58,7 +58,7 @@ inskeys conf@XConfig {modMask = modMask} =
   -- modMask + control + l
   [ ((modMask .|. controlMask, xK_l),       spawn "notifier Locking; xscreensaver-command -lock")
   -- modMask + shift + l
-  , ((modMask .|. shiftMask, xK_b),         spawn "firefox --private-window")
+  , ((modMask .|. shiftMask, xK_b),         spawn "exec firefox --private-window")
   -- modMask + alt + space
   , ((modMask .|. altMask, xK_space),       spawn "cycle-keyboard-layout dvorak us")
   -- Power button
