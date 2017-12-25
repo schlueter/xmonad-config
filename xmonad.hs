@@ -58,11 +58,11 @@ inskeys conf@XConfig {modMask = modMask} =
   -- modMask + control + l
   [ ((modMask .|. controlMask, xK_l),       spawn "notifier Locking; xscreensaver-command -lock")
   -- modMask + shift + l
-  , ((modMask .|. shiftMask, xK_b),         spawn "chromium-browser --incognito")
+  , ((modMask .|. shiftMask, xK_b),         spawn "firefox --private-window")
   -- modMask + alt + space
   , ((modMask .|. altMask, xK_space),       spawn "cycle-keyboard-layout dvorak us")
   -- Power button
-  , ((0, xF86XK_PowerOff),                  spawn "/etc/acpi/powerbtn.sh")
+  , ((0, xF86XK_PowerOff),                  spawn "false")
   ]
 
 -- Delete no default keys
