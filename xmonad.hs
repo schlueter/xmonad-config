@@ -26,7 +26,7 @@ main =
     { keys = customKeys delkeys inskeys
     , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
     , modMask = mod4Mask
-    , terminal = "exec st tmux attach || tmux new"
+    , terminal = "st tmux attach || st tmux new"
     }
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
