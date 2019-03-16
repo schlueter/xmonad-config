@@ -11,8 +11,8 @@ import Graphics.X11.ExtraTypes.XF86 ( xF86XK_PowerOff
                                     , xF86XK_AudioRaiseVolume
                                     )
 
--- Too much to list/how do I explicitly include |||?
 import XMonad
+import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks (avoidStruts)
 import XMonad.Layout.Fullscreen (fullscreenFull)
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
@@ -21,13 +21,17 @@ import XMonad.Util.CustomKeys (customKeys)
 
 altMask = mod1Mask
 
-main =
-  xmonad $ def
-    { keys = customKeys delkeys inskeys
-    , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
-    , modMask = mod4Mask
-    , terminal = "st tmux attach || st tmux new"
-    }
+main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
+
+myStatusBar = "xmobar"
+myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»" }
+toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
+
+myConfig = def { keys = customKeys delkeys inskeys
+               , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
+               , modMask = mod4Mask
+               , terminal = "st tmux attach || st tmux new"
+               }
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
 inskeys conf@XConfig {modMask = modMask} =
