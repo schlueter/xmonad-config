@@ -14,6 +14,10 @@ Config { font = "xft:Fixed-8"
        , hideOnStart = False
        , iconRoot = "."
        , allDesktops = True
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader% }{ %kbd%  %battery%  %multicpu%  %memory%  %swap%  %wlp3s0%   <fc=#FFFFCC>%date%</fc>"
+       , overrideRedirect = False
        , commands = [
            Run MultiCpu ["-t","Cpu: <total0> <total1> <total2> <total3>","-L","30","-H","60","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC","-w","3"] 10
          , Run Memory ["-t","Mem: <usedratio>%","-H","8192","-L","4096","-h","#FFB6B0","-l","#CEFFAC","-n","#FFFFCC"] 10
@@ -23,9 +27,6 @@ Config { font = "xft:Fixed-8"
          , Run StdinReader
          , Run Kbd [("us(dvorak)", "DV"), ("us", "US")]
          , Run BatteryP ["BAT0"] ["-t", "<left>% <acstatus>", "-H", "80", "-p", "3", "--", "-i", "(On)","-O", "(On)", "-o", "(<timeleft>)", "-l", "red", "-m", "blue", "-h", "green"] 60
+         , Run Date "<fc=#ABABAB>%F (%a) %T</fc>" "date" 10
        ]
-       , sepChar = "%"
-       , alignSep = "}{"
-       , template = "%StdinReader% }{ %kbd%  %battery%  %multicpu%  %memory%  %swap%  %wlp3s0%   <fc=#FFFFCC>%date%</fc>"
-       , overrideRedirect = False
 }
