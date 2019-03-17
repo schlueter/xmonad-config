@@ -39,6 +39,7 @@ inskeys conf@XConfig {modMask = modMask} =
   , ((modMask,               xK_p        ), spawn "yegonesh")
   , ((modMask,               xK_backslash), spawn "clipmenu")
   , ((modMask,               xK_b        ), spawn "firefox")
+  , ((modMask,               xK_l        ), spawn "slock")
   , ((modMask .|. shiftMask, xK_b        ), spawn "firefox --private-window")
   , ((0,         xF86XK_AudioPrev        ), spawn "mediac previous")
   , ((0,         xF86XK_AudioPlay        ), spawn "mediac play-pause")
