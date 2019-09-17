@@ -4,3 +4,4 @@ xmonad.hi
 xmonad.state
 xmonad.o
 history
+.stack-work/
