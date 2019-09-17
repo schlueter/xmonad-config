@@ -2,8 +2,7 @@
 --
 -- Requires yegonesh, clipmenu, and services from my bin repository
 
-import Graphics.X11.ExtraTypes.XF86 ( xF86XK_PowerOff
-                                    , xF86XK_AudioPrev
+import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioPrev
                                     , xF86XK_AudioPlay
                                     , xF86XK_AudioNext
                                     , xF86XK_AudioMute
@@ -21,8 +20,8 @@ import XMonad.Util.CustomKeys (customKeys)
 
 altMask = mod1Mask
 
-main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
-
+-- myStatusBar = "dzen2"
+-- myPP = defaultPP
 myStatusBar = "xmobar"
 myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»" }
 toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
@@ -40,7 +39,8 @@ inskeys conf@XConfig {modMask = modMask} =
   , ((modMask,               xK_backslash), spawn "clipmenu")
   , ((modMask,               xK_b        ), spawn "firefox")
   , ((modMask,               xK_l        ), spawn "slock")
-  , ((modMask .|. shiftMask, xK_b        ), spawn "firefox --private-window")
+  , ((modMask .|. shiftMask, xK_h        ), sendMessage Shrink) -- %! Shrink the master area
+  , ((modMask .|. shiftMask, xK_l        ), sendMessage Expand) -- %! Expand the master area
   , ((0,         xF86XK_AudioPrev        ), spawn "mediac previous")
   , ((0,         xF86XK_AudioPlay        ), spawn "mediac play-pause")
   , ((0,         xF86XK_AudioNext        ), spawn "mediac next")
@@ -49,13 +49,11 @@ inskeys conf@XConfig {modMask = modMask} =
   , ((0,         xF86XK_AudioRaiseVolume ), spawn "mediac +1")
   , ((shiftMask, xF86XK_AudioLowerVolume ), spawn "mediac -")
   , ((shiftMask, xF86XK_AudioRaiseVolume ), spawn "mediac +")
-  , ((modMask, xK_z), spawn "env > /tmp/xmonad-env")
-
-  -- Power button -- WARNING this will not work as the login service rather than X handles the power button
-  -- For systemd managed systems see logind.conf(5)
-  -- , ((0, xF86XK_PowerOff), spawn "false")
   ]
 
 -- Delete no default keys
 delkeys :: XConfig l -> [(KeyMask, KeySym)]
 delkeys XConfig {} = []
+
+-- main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
+main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
