@@ -1,6 +1,4 @@
 -- Author: Brandon Schlueter
---
--- Requires yegonesh, clipmenu, and services from my bin repository
 
 import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioPrev
                                     , xF86XK_AudioPlay
@@ -18,23 +16,20 @@ import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Util.CustomKeys (customKeys)
 
 
-altMask = mod1Mask
+main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
 
--- myStatusBar = "dzen2"
--- myPP = defaultPP
-myStatusBar = "xmobar"
 myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»" }
 toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
 
 myConfig = def { keys = customKeys delkeys inskeys
                , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
-               , modMask = mod4Mask
-               , terminal = "st tmux attach || st tmux new"
+               , modMask = mod4Mask -- ⌘  key on mac
+               , terminal = "st tmux attach -t default || st tmux new -s default"
                }
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
 inskeys conf@XConfig {modMask = modMask} =
-  [ ((modMask .|. altMask,   xK_space    ), spawn "cycle-keyboard-layout dvorak us")
+  [ ((modMask .|. mod1Mask,  xK_space    ), spawn "cycle-keyboard-layout dvorak us") -- mod + alt + space
   , ((modMask,               xK_p        ), spawn "yegonesh")
   , ((modMask,               xK_backslash), spawn "clipmenu")
   , ((modMask,               xK_b        ), spawn "firefox")
@@ -54,6 +49,3 @@ inskeys conf@XConfig {modMask = modMask} =
 -- Delete no default keys
 delkeys :: XConfig l -> [(KeyMask, KeySym)]
 delkeys XConfig {} = []
-
--- main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
-main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
