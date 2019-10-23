@@ -18,14 +18,16 @@ import XMonad.Util.CustomKeys (customKeys)
 
 main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
 
-myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»" }
+myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»"
+                , ppTitle = xmobarColor "green"  ""}
 toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
 
 myConfig = def { keys = customKeys delkeys inskeys
                , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
                , modMask = mod4Mask -- ⌘  key on mac
-               , terminal = "st tmux attach -t default || st tmux new -s default"
-               }
+               , terminal = "st tmux attach -t default || st tmux new -s default" }
+
+delkeys XConfig {} = []
 
 inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
 inskeys conf@XConfig {modMask = modMask} =
@@ -43,9 +45,4 @@ inskeys conf@XConfig {modMask = modMask} =
   , ((0,         xF86XK_AudioLowerVolume ), spawn "mediac -1")
   , ((0,         xF86XK_AudioRaiseVolume ), spawn "mediac +1")
   , ((shiftMask, xF86XK_AudioLowerVolume ), spawn "mediac -")
-  , ((shiftMask, xF86XK_AudioRaiseVolume ), spawn "mediac +")
-  ]
-
--- Delete no default keys
-delkeys :: XConfig l -> [(KeyMask, KeySym)]
-delkeys XConfig {} = []
+  , ((shiftMask, xF86XK_AudioRaiseVolume ), spawn "mediac +") ]

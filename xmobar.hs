@@ -1,8 +1,9 @@
 --  Author: Brandon Schlueter
 
-Config { position = Top
+Config { font = "-*-terminal-medium-*-*-*-14-*-*-*-*-*-*-*"
+       , position = Top
        , allDesktops = True
-       , template = "%StdinReader% }{ %kbd%  %battery%   |   %date%"
+       , template = "%StdinReader% }{ %kbd%  %battery%   %date%"
        , commands = [
            Run StdinReader
          , Run Kbd [("us(dvorak)", "DV"), ("us", "US")]
