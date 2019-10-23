@@ -14,8 +14,9 @@ import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Util.CustomKeys (customKeys)
 
 
-main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
+main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
 
+myStatusBar = "xmobar"
 myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»"
                 , ppTitle = xmobarColor "lightblue"  ""}
 
