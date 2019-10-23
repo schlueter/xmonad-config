@@ -5,9 +5,7 @@ import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioPrev
                                     , xF86XK_AudioNext
                                     , xF86XK_AudioMute
                                     , xF86XK_AudioLowerVolume
-                                    , xF86XK_AudioRaiseVolume
-                                    )
-
+                                    , xF86XK_AudioRaiseVolume)
 import XMonad
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks (avoidStruts)
@@ -19,7 +17,8 @@ import XMonad.Util.CustomKeys (customKeys)
 main = xmonad =<< statusBar "xmobar" myPP toggleStrutsKey myConfig
 
 myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»"
-                , ppTitle = xmobarColor "green"  ""}
+                , ppTitle = xmobarColor "lightblue"  ""}
+
 toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
 
 myConfig = def { keys = customKeys delkeys inskeys
@@ -29,7 +28,6 @@ myConfig = def { keys = customKeys delkeys inskeys
 
 delkeys XConfig {} = []
 
-inskeys :: XConfig l -> [((KeyMask, KeySym), X ())]
 inskeys conf@XConfig {modMask = modMask} =
   [ ((modMask .|. mod1Mask,  xK_space    ), spawn "cycle-keyboard-layout dvorak us") -- mod + alt + space
   , ((modMask,               xK_p        ), spawn "yegonesh")
