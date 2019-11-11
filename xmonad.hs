@@ -34,6 +34,7 @@ delkeys XConfig {} = []
 inskeys conf@XConfig {modMask = modMask} =
   [ ((modMask .|. mod1Mask,  xK_space    ), spawn "cycle-keyboard-layout dvorak us") -- mod + alt + space
   , ((modMask,               xK_p        ), spawn "yegonesh")
+  , ((modMask .|. shiftMask, xK_p        ), spawn "rofi -show run")
   , ((modMask,               xK_backslash), spawn "clipmenu")
   , ((modMask,               xK_b        ), spawn "firefox")
   , ((modMask,               xK_l        ), spawn "slock")
