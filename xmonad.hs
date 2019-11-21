@@ -27,7 +27,7 @@ toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
 myConfig = def { keys = customKeys delkeys inskeys
                , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
                , modMask = mod4Mask -- ⌘  key on mac
-               , terminal = "kitty --single-instance --instance-group 1" }
+               , terminal = "kitty" }
 
 delkeys XConfig {} = []
 
