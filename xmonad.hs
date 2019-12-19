@@ -1,52 +1,67 @@
 -- Author: Brandon Schlueter
 
-import Graphics.X11.ExtraTypes.XF86 ( xF86XK_AudioPrev
-                                    , xF86XK_AudioPlay
-                                    , xF86XK_AudioNext
-                                    , xF86XK_AudioMute
-                                    , xF86XK_AudioLowerVolume
-                                    , xF86XK_AudioRaiseVolume
-                                    , xF86XK_MonBrightnessDown
-                                    , xF86XK_MonBrightnessUp)
+import Control.Monad (forM_, join)
+import Data.Function (on)
+import Data.List (sortBy)
 import XMonad
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.ManageDocks (avoidStruts)
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat)
 import XMonad.Layout.Fullscreen (fullscreenFull)
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import XMonad.Util.CustomKeys (customKeys)
+import XMonad.Util.EZConfig (additionalKeysP, checkKeymap)
+import XMonad.Util.NamedWindows (getName)
+import XMonad.Util.Run (safeSpawn)
+
+import qualified XMonad.StackSet as W
 
 
-main = xmonad =<< statusBar myStatusBar myPP toggleStrutsKey myConfig
+main = do
+    spawn "launch-polybar.sh"
+    forM_ [".xmonad-workspace-log", ".xmonad-title-log"] $ \file ->
+        safeSpawn "mkfifo" ["/tmp/" ++ file]
+    xmonad $ docks $ additionalKeysP myConfig myKeymap
 
-myStatusBar = "xmobar"
-myPP = xmobarPP { ppCurrent = xmobarColor "#429942" "" . wrap "«" "»"
-                , ppTitle = xmobarColor "lightblue"  ""}
-
-toggleStrutsKey XConfig {modMask = modMask} = (modMask, xK_h)
-
-myConfig = def { keys = customKeys delkeys inskeys
-               , layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| noBorders (fullscreenFull Full)
+myConfig = def { layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| avoidStruts (noBorders (fullscreenFull Full))
+               , logHook = polybarHook
+               , manageHook = manageHook def <+> manageDocks
                , modMask = mod4Mask -- ⌘  key on mac
-               , terminal = "kitty" }
+               , terminal = "kitty"
+               , startupHook = return () >> checkKeymap myConfig myKeymap }
 
-delkeys XConfig {} = []
+-- Populate fifos for polybar
+polybarHook = do
+  winset <- gets windowset
+  title <- maybe (return "") (fmap show . getName) . W.peek $ winset
+  let currWs = W.currentTag winset
+  let wss = map W.tag $ W.workspaces winset
+  let wsStr = join $ map (fmt currWs) $ sort' wss
 
-inskeys conf@XConfig {modMask = modMask} =
-  [ ((modMask .|. mod1Mask,  xK_space    ), spawn "cycle-keyboard-layout dvorak us") -- mod + alt + space
-  , ((modMask,               xK_p        ), spawn "yegonesh")
-  , ((modMask .|. shiftMask, xK_p        ), spawn "rofi -show run")
-  , ((modMask,               xK_backslash), spawn "clipmenu")
-  , ((modMask,               xK_b        ), spawn "firefox")
-  , ((modMask,               xK_l        ), spawn "slock")
-  , ((modMask .|. shiftMask, xK_h        ), sendMessage Shrink) -- %! Shrink the master area
-  , ((modMask .|. shiftMask, xK_l        ), sendMessage Expand) -- %! Expand the master area
-  , ((0,         xF86XK_MonBrightnessUp  ), spawn "brightness +15")
-  , ((0,         xF86XK_MonBrightnessDown), spawn "brightness -15")
-  , ((0,         xF86XK_AudioPrev        ), spawn "mediac previous")
-  , ((0,         xF86XK_AudioPlay        ), spawn "mediac play-pause")
-  , ((0,         xF86XK_AudioNext        ), spawn "mediac next")
-  , ((0,         xF86XK_AudioMute        ), spawn "mediac toggle-mute")
-  , ((0,         xF86XK_AudioLowerVolume ), spawn "mediac -1")
-  , ((0,         xF86XK_AudioRaiseVolume ), spawn "mediac +1")
-  , ((shiftMask, xF86XK_AudioLowerVolume ), spawn "mediac -")
-  , ((shiftMask, xF86XK_AudioRaiseVolume ), spawn "mediac +") ]
+  io $ appendFile "/tmp/.xmonad-title-log" (title ++ "\n")
+  io $ appendFile "/tmp/.xmonad-workspace-log" (wsStr ++ "\n")
+
+  where fmt currWs ws
+          | currWs == ws = "%{B#0ff}%{F#000} " ++ ws ++ " %{B- F-}"
+          | otherwise    = " " ++ ws ++ " "
+        sort' = sortBy (compare `on` (!! 0))
+
+myKeymap =
+  [ ("M-M1-<Space>"            , spawn "cycle-keyboard-layout dvorak us") -- mod + alt + space
+  , ("M-p"                     , spawn "yegonesh")
+  , ("M-\\"                    , spawn "clipmenu")
+  , ("M-b"                     , spawn "firefox")
+  , ("M-l"                     , spawn "slock")
+  , ("M-h"                     , sendMessage ToggleStruts)
+  , ("M-S-h"                   , sendMessage Shrink) -- %! Shrink the master area
+  , ("M-S-l"                   , sendMessage Expand) -- %! Expand the master area
+  , ("<XF86MonBrightnessUp>"   , spawn "brightness +15")
+  , ("<XF86MonBrightnessDown>" , spawn "brightness -15")
+  , ("<XF86AudioPrev>"         , spawn "mediac previous")
+  , ("<XF86AudioPlay>"         , spawn "mediac play-pause")
+  , ("<XF86AudioNext>"         , spawn "mediac next")
+  , ("<XF86AudioMute>"         , spawn "mediac toggle-mute")
+  , ("<XF86AudioLowerVolume>"  , spawn "mediac -1")
+  , ("<XF86AudioRaiseVolume>"  , spawn "mediac +1")
+  , ("S-<XF86AudioLowerVolume>", spawn "mediac -")
+  , ("S-<XF86AudioRaiseVolume>", spawn "mediac +") ]
