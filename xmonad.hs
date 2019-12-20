@@ -23,7 +23,10 @@ main = do
         safeSpawn "mkfifo" ["/tmp/" ++ file]
     xmonad $ docks $ additionalKeysP myConfig myKeymap
 
-myConfig = def { layoutHook = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2)) ||| avoidStruts (noBorders (fullscreenFull Full))
+twoColumnLayout = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2))
+oneWindowLayout = avoidStruts (noBorders (fullscreenFull Full))
+
+myConfig = def { layoutHook = twoColumnLayout ||| oneWindowLayout
                , logHook = polybarHook
                , manageHook = manageHook def <+> manageDocks
                , modMask = mod4Mask -- ⌘  key on mac
