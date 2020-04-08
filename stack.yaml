@@ -1,10 +1,5 @@
 resolver: lts-14.6
 packages:
-  - xmobar
   - xmonad
   - xmonad-contrib
-extra-deps:
-  - iwlib-0.1.0
 flags:
-  xmobar:
-    all_extensions: true

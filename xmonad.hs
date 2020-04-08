@@ -4,6 +4,7 @@ import Control.Monad (forM_, join)
 import Data.Function (on)
 import Data.List (sortBy)
 import XMonad
+import XMonad.Actions.GridSelect
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers (isFullscreen, doFullFloat)
@@ -37,16 +38,16 @@ myConfig = def { layoutHook = twoColumnLayout ||| oneWindowLayout
 polybarHook = do
   winset <- gets windowset
   title <- maybe (return "") (fmap show . getName) . W.peek $ winset
-  let currWs = W.currentTag winset
-  let wss = map W.tag $ W.workspaces winset
-  let wsStr = join $ map (fmt currWs) $ sort' wss
+  let current_workspace = W.currentTag winset
+  let workspaces = map W.tag $ W.workspaces winset
+  let workspaces_string = join $ map (format current_workspace) $ sort' workspaces
 
   io $ appendFile "/tmp/.xmonad-title-log" (title ++ "\n")
-  io $ appendFile "/tmp/.xmonad-workspace-log" (wsStr ++ "\n")
+  io $ appendFile "/tmp/.xmonad-workspace-log" (workspaces_string ++ "\n")
 
-  where fmt currWs ws
-          | currWs == ws = "%{B#0ff}%{F#000} " ++ ws ++ " %{B- F-}"
-          | otherwise    = " " ++ ws ++ " "
+  where format current_workspace workspace
+          | current_workspace == workspace = "%{B#0ff}%{F#000} " ++ workspace ++ " %{B- F-}"
+          | otherwise    = " " ++ workspace ++ " "
         sort' = sortBy (compare `on` (!! 0))
 
 myKeymap =
@@ -55,6 +56,7 @@ myKeymap =
   , ("M-\\"                    , spawn "clipmenu")
   , ("M-b"                     , spawn "firefox")
   , ("M-l"                     , spawn "slock")
+  , ("M-g"                     , goToSelected defaultGSConfig)
   , ("M-h"                     , sendMessage ToggleStruts)
   , ("M-S-h"                   , sendMessage Shrink) -- %! Shrink the master area
   , ("M-S-l"                   , sendMessage Expand) -- %! Expand the master area
