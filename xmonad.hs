@@ -20,8 +20,6 @@ import qualified XMonad.StackSet as W
 main :: IO ()
 main = do
     spawn "launch-polybar.sh"
-    forM_ [".xmonad-workspace-log", ".xmonad-title-log"] $ \file ->
-        safeSpawn "mkfifo" ["/tmp/" ++ file]
     xmonad $ docks $ additionalKeysP myConfig myKeymap
 
 twoColumnLayout = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2))
