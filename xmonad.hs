@@ -13,13 +13,16 @@ import XMonad.Util.CustomKeys (customKeys)
 import XMonad.Util.EZConfig (additionalKeysP, checkKeymap)
 import XMonad.Util.NamedWindows (getName)
 import XMonad.Util.Run (safeSpawn)
+import XMonad.Layout.Circle
 
 import qualified XMonad.StackSet as W
 
 
 main :: IO ()
 main = do
+    -- Launch polybar, obviously
     spawn "launch-polybar.sh"
+    -- Run xmonad, making it aware of docks (like polybar), and providing our config
     xmonad $ docks $ additionalKeysP myConfig myKeymap
 
 isNothing :: Maybe a -> Bool
@@ -29,7 +32,7 @@ isNothing _ = False
 twoColumnLayout = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2))
 oneWindowLayout = avoidStruts (noBorders (fullscreenFull Full))
 
-myConfig = def { layoutHook = twoColumnLayout ||| oneWindowLayout
+myConfig = def { layoutHook = twoColumnLayout ||| oneWindowLayout ||| Circle
                , logHook = polybarHook
                , manageHook = manageHook def <+> manageDocks
                , modMask = mod4Mask -- ⌘  key on mac
