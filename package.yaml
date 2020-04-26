@@ -1,0 +1,13 @@
+name: myXmonad
+version: 2020.4.24
+synopsis: My Xmonad config
+description: See README at <https://github.com/schlueter/xmonad-config>
+maintainer: Brandon Schlueter <b@schlueter.blue>
+github: schlueter/xmonad-config
+category: Desktop Environment
+dependencies:
+  - xmonad
+  - xmonad-contrib
+  - base
+executable:
+  main: xmonad.hs
