@@ -1,8 +1,7 @@
 -- Author: Brandon Schlueter
 
 import Control.Monad (forM_, join)
-import Data.Function (on)
-import Data.List (sortBy)
+
 import XMonad
 import XMonad.Actions.GridSelect
 import XMonad.Hooks.DynamicLog
@@ -39,16 +38,10 @@ polybarHook = do
   winset <- gets windowset
   title <- maybe (return "") (fmap show . getName) . W.peek $ winset
   let current_workspace = W.currentTag winset
-  let workspaces = map W.tag $ W.workspaces winset
-  let workspaces_string = join $ map (format current_workspace) $ sort' workspaces
+  let workspaces_string = join $ map (format current_workspace) $ W.workspaces winset
 
   io $ appendFile "/tmp/.xmonad-title-log" (title ++ "\n")
   io $ appendFile "/tmp/.xmonad-workspace-log" (workspaces_string ++ "\n")
-
-  where format current_workspace workspace
-          | current_workspace == workspace = "%{B#0ff}%{F#000} " ++ workspace ++ " %{B- F-}"
-          | otherwise    = " " ++ workspace ++ " "
-        sort' = sortBy (compare `on` (!! 0))
 
 myKeymap =
   [ ("M-M1-<Space>"            , spawn "cycle-keyboard-layout dvorak us") -- mod + alt + space
