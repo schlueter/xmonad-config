@@ -5,5 +5,4 @@ myXmonad.cabal
 xmonad-x86_64-linux
 xmonad.errors
 xmonad.hi
-xmonad.state
 xmonad.o
