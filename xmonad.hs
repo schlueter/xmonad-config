@@ -1,6 +1,6 @@
 -- Author: Brandon Schlueter
 
-import Control.Monad (forM_, join)
+import Control.Monad (join)
 
 import XMonad
 import XMonad.Actions.GridSelect
@@ -14,17 +14,19 @@ import XMonad.Util.EZConfig (additionalKeysP, checkKeymap)
 import XMonad.Util.NamedWindows (getName)
 import XMonad.Util.Run (safeSpawn)
 import XMonad.Layout.Circle
+import XMonad.Actions.SimpleDate
 
 import qualified XMonad.StackSet as W
 
 
+-- Launch polybar, obviously
+-- Run xmonad, making it aware of docks (like polybar), and providing our config
 main :: IO ()
 main = do
-    -- Launch polybar, obviously
     spawn "launch-polybar.sh"
-    -- Run xmonad, making it aware of docks (like polybar), and providing our config
     xmonad $ docks $ additionalKeysP myConfig myKeymap
 
+-- Check for Nothing
 isNothing :: Maybe a -> Bool
 isNothing Nothing = True
 isNothing _ = False
@@ -37,6 +39,7 @@ myConfig = def { layoutHook = twoColumnLayout ||| oneWindowLayout ||| Circle
                , manageHook = manageHook def <+> manageDocks
                , modMask = mod4Mask -- ⌘  key on mac
                , terminal = "kitty"
+               -- Enable keyboard shortcut configuration via simple aliases
                , startupHook = return () >> checkKeymap myConfig myKeymap }
 
 -- Formatting for workspace display in polybar
@@ -68,6 +71,7 @@ myKeymap =
   , ("M-\\"                    , spawn "clipmenu")
   , ("M-b"                     , spawn "firefox")
   , ("M-l"                     , spawn "slock")
+  , ("M-d"                     , date)
   , ("M-g"                     , goToSelected def)
   , ("M-h"                     , sendMessage ToggleStruts)
   , ("M-S-h"                   , sendMessage Shrink) -- %! Shrink the master area
