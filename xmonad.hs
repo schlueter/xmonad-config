@@ -22,6 +22,10 @@ main = do
     spawn "launch-polybar.sh"
     xmonad $ docks $ additionalKeysP myConfig myKeymap
 
+isNothing :: Maybe a -> Bool
+isNothing Nothing = True
+isNothing _ = False
+
 twoColumnLayout = smartBorders $ avoidStruts ( Tall 1 (3/100) (1/2))
 oneWindowLayout = avoidStruts (noBorders (fullscreenFull Full))
 
@@ -31,6 +35,19 @@ myConfig = def { layoutHook = twoColumnLayout ||| oneWindowLayout
                , modMask = mod4Mask -- ⌘  key on mac
                , terminal = "kitty"
                , startupHook = return () >> checkKeymap myConfig myKeymap }
+
+-- Formatting for workspace display in polybar
+currentFormat :: String -> String
+currentFormat tag = "%{B#0ff}%{F#000} " ++ tag ++ " %{B- F-}"
+inUseFormat :: String -> String
+inUseFormat tag = " %{F#666}" ++ tag ++ " %{B- F-}"
+notInUseFormat :: String -> String
+notInUseFormat tag = " " ++ tag ++ " "
+format :: String -> W.Workspace String l a -> String
+format current_workspace workspace
+  | current_workspace == W.tag workspace = currentFormat $ W.tag workspace
+  | isNothing (W.stack workspace) = inUseFormat $ W.tag workspace
+  | otherwise = notInUseFormat $ W.tag workspace
 
 -- Populate fifos for polybar
 polybarHook = do
