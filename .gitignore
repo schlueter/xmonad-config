@@ -1,4 +1,5 @@
 .stack-work/
+dist-newstyle/
 history
 myXmonad.cabal
 xmonad-x86_64-linux
