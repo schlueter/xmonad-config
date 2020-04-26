@@ -1,4 +1,5 @@
 #!/bin/sh
-set -ex
-stack install
-ln -f /home/bschlueter/.local/bin/myXmonad xmonad-x86_64-linux
+set -eo pipefail
+stack clean
+built_to_path="$(stack build 2>&1 | tee /dev/stderr | sed -En 's/Installing\ executable\ ([a-zA-Z]+) in (.*)/\2\/\1/p')"
+ln -f "$built_to_path" xmonad-x86_64-linux
