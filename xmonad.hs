@@ -17,6 +17,7 @@ import XMonad.Util.Run (safeSpawn)
 import qualified XMonad.StackSet as W
 
 
+main :: IO ()
 main = do
     spawn "launch-polybar.sh"
     forM_ [".xmonad-workspace-log", ".xmonad-title-log"] $ \file ->
@@ -49,7 +50,7 @@ myKeymap =
   , ("M-\\"                    , spawn "clipmenu")
   , ("M-b"                     , spawn "firefox")
   , ("M-l"                     , spawn "slock")
-  , ("M-g"                     , goToSelected defaultGSConfig)
+  , ("M-g"                     , goToSelected def)
   , ("M-h"                     , sendMessage ToggleStruts)
   , ("M-S-h"                   , sendMessage Shrink) -- %! Shrink the master area
   , ("M-S-l"                   , sendMessage Expand) -- %! Expand the master area
