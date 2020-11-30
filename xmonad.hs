@@ -66,7 +66,38 @@ myLayOutHook = twoColumnLayout ||| oneWindowLayout ||| Circle ||| tabbedLayout
 
 myStartupHook :: X ()
 myStartupHook = do
-    spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 15 --transparent true --alpha 205 --tint 0x283339 --height 30 &"
+    spawnOnce "setxkbmap -layout dvorak -option caps:ctrl_modifier"
+    spawnOnce "xcape -e 'Caps_Lock=Escape'"
+    spawnOnce "xbanish &"
+    spawnOnce "xrandr --output eDP-1 --scale 1x1"
+    spawnOnce "picom --daemon --dbus"
+    spawnOnce "xbg"
+    spawnOnce $ join [
+        "trayer"
+      , " --edge top"
+      , " --align right"
+      , " --SetDockType true"
+      , " --SetPartialStrut true"
+      , " --expand true"
+      , " --width 10"
+      , " --transparent true"
+      , " --alpha 155"
+      , " --tint 0x283339"
+      , " --height 30"
+      , " &" ]
+    spawnOnce "blueman-tray &"
+    spawnOnce "nm-applet &"
+    spawnOnce $ join [
+        "xautolock"
+      , " -time 10"
+      , " -notify 120"
+      , " -corners"
+      , " -0+0"
+      , " -locker slock electricsheep"
+      , " -detectsleep"
+      , " -secure"
+      , "&" ]
+
     setWMName "XMonad"
 
 myKeymap :: [(String, X ())]
