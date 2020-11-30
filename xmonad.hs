@@ -4,7 +4,8 @@ import           Control.Monad
 
 import           XMonad
 
-import           XMonad.Hooks.DynamicLog
+import           XMonad.Config.Kde
+
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Hooks.SetWMName
 
@@ -29,22 +30,13 @@ import qualified XMonad.StackSet               as W
 
 
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
-  xmonad $ docks def {
+  xmonad $ kdeConfig {
       layoutHook  = myLayOutHook
-    , logHook     = dynamicLogWithPP myPP { ppOutput = hPutStrLn xmproc }
-    , manageHook  = manageHook def <+> manageDocks
+    , manageHook  = manageHook kdeConfig
     , modMask     = mod4Mask -- ⌘  key on mac
     , terminal    = "kitty"
     , startupHook = myStartupHook
     } `additionalKeysP` myKeymap
-
-myPP = def {
-    ppCurrent = xmobarColor "#1ABC9C" "" . wrap "[" "]"
-  , ppTitle   = xmobarColor "#1ABC9C" "" . shorten 60
-  , ppVisible = wrap "(" ")"
-  , ppUrgent  = xmobarColor "red" "yellow"
-  }
 
 myTabConfig = def {
     activeColor = "#556064"
