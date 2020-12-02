@@ -87,6 +87,7 @@ myStartupHook = do
       , " &" ]
     spawnOnce "blueman-tray &"
     spawnOnce "nm-applet &"
+    spawnOnce "psystray &"
     spawnOnce $ join [
         "xautolock"
       , " -time 10"
