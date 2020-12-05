@@ -3,112 +3,50 @@
 import           Control.Monad
 
 import           XMonad
-
 import           XMonad.Config.Kde
-
 import           XMonad.Hooks.ManageDocks
-import           XMonad.Hooks.SetWMName
 
 import           XMonad.Layout.Circle
-import           XMonad.Layout.Fullscreen       ( FullscreenFull
-                                                , fullscreenFull )
-import           XMonad.Layout.LayoutModifier   ( ModifiedLayout )
-import           XMonad.Layout.NoBorders        ( SmartBorder
-                                                , WithBorder
-                                                , noBorders
+import           XMonad.Layout.Fullscreen       ( fullscreenFull )
+import           XMonad.Layout.NoBorders        ( noBorders
                                                 , smartBorders)
-import           XMonad.Layout.Tabbed
-import           XMonad.Layout.ShowWName
+import           XMonad.Layout.Tabbed           ( tabbed )
 
-import           XMonad.Util.EZConfig           ( additionalKeysP
-                                                , checkKeymap)
+import           XMonad.Util.EZConfig           ( additionalKeysP )
 import           XMonad.Util.NamedWindows       ( getName )
-import           XMonad.Util.Run
-import           XMonad.Util.SpawnOnce
-
-import qualified XMonad.StackSet               as W
+import           XMonad.Util.SpawnOnce          ( spawnOnce )
 
 
 main = do
   xmonad $ kdeConfig {
       layoutHook  = myLayOutHook
-    , manageHook  = manageHook kdeConfig
+    , manageHook  = manageHook kdeConfig <+> manageDocks
     , modMask     = mod4Mask -- ⌘  key on mac
-    , terminal    = "kitty"
     , startupHook = myStartupHook
+    , terminal    = "kitty"
     } `additionalKeysP` myKeymap
-
-myTabConfig = def {
-    activeColor = "#556064"
-  , inactiveColor = "#2F3D44"
-  , urgentColor = "#FDF6E3"
-  , activeBorderColor = "#454948"
-  , inactiveBorderColor = "#454948"
-  , urgentBorderColor = "#268BD2"
-  , activeTextColor = "#80FFF9"
-  , inactiveTextColor = "#1ABC9C"
-  , urgentTextColor = "#1ABC9C"
-  , fontName = "xft:Noto Sans CJK:size=10:antialias=true"
-  }
 
 twoColumnLayout = smartBorders $ avoidStruts (Tall 1 (3 / 100) (1 / 2))
 oneWindowLayout = avoidStruts (noBorders (fullscreenFull Full))
-tabbedLayout = avoidStruts $ noBorders (tabbed shrinkText myTabConfig)
+tabbedLayout = avoidStruts $ noBorders (tabbed shrinkText def)
 myLayOutHook = twoColumnLayout ||| oneWindowLayout ||| Circle ||| tabbedLayout
 
 myStartupHook :: X ()
 myStartupHook = do
-    spawnOnce "setxkbmap -layout dvorak -option caps:ctrl_modifier"
     spawnOnce "xcape -e 'Caps_Lock=Escape'"
     spawnOnce "xbanish &"
-    spawnOnce "xrandr --output eDP-1 --scale 1x1"
-    spawnOnce "picom --daemon --dbus"
-    spawnOnce "xbg"
-    spawnOnce $ join [
-        "trayer"
-      , " --edge top"
-      , " --align right"
-      , " --SetDockType true"
-      , " --SetPartialStrut true"
-      , " --expand true"
-      , " --width 10"
-      , " --transparent true"
-      , " --alpha 155"
-      , " --tint 0x283339"
-      , " --height 30"
-      , " &" ]
-    spawnOnce "blueman-tray &"
-    spawnOnce "nm-applet &"
-    spawnOnce "psystray &"
-    spawnOnce $ join [
-        "xautolock"
-      , " -time 10"
-      , " -notify 120"
-      , " -corners"
-      , " -0+0"
-      , " -locker slock electricsheep"
-      , " -detectsleep"
-      , " -secure"
-      , "&" ]
-
-    setWMName "XMonad"
+    spawnOnce "dunst &"
 
 myKeymap :: [(String, X ())]
 myKeymap =
-  [ ( "M-M1-<Space>"
-    , spawn "cycle-keyboard-layout dvorak us"
-    ) -- mod + alt + space
+  [ ( "M-M1-<Space>" , spawn "cycle-keyboard-layout dvorak us")
   , ("M-p" , spawn "yegonesh")
   , ("M-\\", spawn "clipmenu")
   , ("M-b" , spawn "firefox")
   , ("M-l" , spawn "slock")
   , ("M-h" , sendMessage ToggleStruts)
-  , ( "M-S-h"
-    , sendMessage Shrink
-    ) -- %! Shrink the master area
-  , ( "M-S-l"
-    , sendMessage Expand
-    ) -- %! Expand the master area
+  , ( "M-S-h" , sendMessage Shrink)
+  , ( "M-S-l" , sendMessage Expand)
   , ("<XF86MonBrightnessUp>"   , spawn "brightness +15")
   , ("<XF86MonBrightnessDown>" , spawn "brightness -15")
   , ("<XF86AudioPrev>"         , spawn "mediac previous")
@@ -120,4 +58,3 @@ myKeymap =
   , ("S-<XF86AudioLowerVolume>", spawn "mediac -")
   , ("S-<XF86AudioRaiseVolume>", spawn "mediac +")
   ]
-
