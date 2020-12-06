@@ -1,4 +1,4 @@
--- Author: Brandon Schlueter
+-- Author: Brandon Schlueter <b@schlueter.blue>
 import           XMonad
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Config.Kde              ( kde4Config )
