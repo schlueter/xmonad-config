@@ -36,7 +36,7 @@ myKeymap =
   , ("M-p"   , spawn "yegonesh")
   , ("M-\\"  , spawn "clipmenu")
   , ("M-b"   , spawn "firefox")
-  , ("M-l"   , spawn "slock")
+  , ("M-l"   , spawn "dbus-send --session --dest=org.freedesktop.ScreenSaver --type=method_call /org/freedesktop/ScreenSaver org.freedesktop.ScreenSaver.SetActive boolean:true")
   , ("M-h"   , sendMessage ToggleStruts)
   , ("M-S-h" , sendMessage Shrink)
   , ("M-S-l" , sendMessage Expand)
