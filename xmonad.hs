@@ -1,52 +1,45 @@
 -- Author: Brandon Schlueter
-
-import           Control.Monad
-
 import           XMonad
-import           XMonad.Config.Kde
 import           XMonad.Hooks.ManageDocks
+import           XMonad.Config.Kde              ( kde4Config )
 
 import           XMonad.Layout.Circle
 import           XMonad.Layout.Fullscreen       ( fullscreenFull )
-import           XMonad.Layout.NoBorders        ( noBorders
-                                                , smartBorders)
-import           XMonad.Layout.Tabbed           ( tabbed )
+import           XMonad.Layout.NoBorders        ( smartBorders)
 
 import           XMonad.Util.EZConfig           ( additionalKeysP )
 import           XMonad.Util.NamedWindows       ( getName )
 import           XMonad.Util.SpawnOnce          ( spawnOnce )
 
 
-main = do
-  xmonad $ kdeConfig {
-      layoutHook  = myLayOutHook
-    , manageHook  = manageHook kdeConfig <+> manageDocks
-    , modMask     = mod4Mask -- ⌘  key on mac
-    , startupHook = myStartupHook
-    , terminal    = "kitty"
-    } `additionalKeysP` myKeymap
+main = xmonad $ baseConfig {
+    startupHook = startupHook baseConfig <+> myStartupHook
+  , manageHook  = manageHook baseConfig <+> manageDocks
+  , layoutHook  = twoColumnLayout ||| oneWindowLayout ||| Circle
+  }
 
-twoColumnLayout = smartBorders $ avoidStruts (Tall 1 (3 / 100) (1 / 2))
-oneWindowLayout = avoidStruts (noBorders (fullscreenFull Full))
-tabbedLayout = avoidStruts $ noBorders (tabbed shrinkText def)
-myLayOutHook = twoColumnLayout ||| oneWindowLayout ||| Circle ||| tabbedLayout
+baseConfig = kde4Config {
+    modMask     = mod4Mask -- ⌘  key on mac
+  , terminal    = "kitty"
+  } `additionalKeysP` myKeymap
 
-myStartupHook :: X ()
+twoColumnLayout = avoidStruts $ smartBorders (Tall 1 (3 / 100) (1 / 2))
+oneWindowLayout = avoidStruts $ smartBorders $ fullscreenFull Full
+
 myStartupHook = do
     spawnOnce "xcape -e 'Caps_Lock=Escape'"
     spawnOnce "xbanish &"
     spawnOnce "dunst &"
 
-myKeymap :: [(String, X ())]
 myKeymap =
-  [ ( "M-M1-<Space>" , spawn "cycle-keyboard-layout dvorak us")
-  , ("M-p" , spawn "yegonesh")
-  , ("M-\\", spawn "clipmenu")
-  , ("M-b" , spawn "firefox")
-  , ("M-l" , spawn "slock")
-  , ("M-h" , sendMessage ToggleStruts)
-  , ( "M-S-h" , sendMessage Shrink)
-  , ( "M-S-l" , sendMessage Expand)
+  [ ("M-M1-<Space>" , spawn "cycle-keyboard-layout dvorak us")
+  , ("M-p"   , spawn "yegonesh")
+  , ("M-\\"  , spawn "clipmenu")
+  , ("M-b"   , spawn "firefox")
+  , ("M-l"   , spawn "slock")
+  , ("M-h"   , sendMessage ToggleStruts)
+  , ("M-S-h" , sendMessage Shrink)
+  , ("M-S-l" , sendMessage Expand)
   , ("<XF86MonBrightnessUp>"   , spawn "brightness +15")
   , ("<XF86MonBrightnessDown>" , spawn "brightness -15")
   , ("<XF86AudioPrev>"         , spawn "mediac previous")
